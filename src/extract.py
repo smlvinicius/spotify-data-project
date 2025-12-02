@@ -36,6 +36,44 @@ def get_playlist_tracks(playlist_id, limit=100):
 
     return items
 
+def get_audio_features(track_ids):
+    headers = get_headers()
+    features = []
+    # Batch de 100 IDs por requisição
+    batch_size = 100
+    for i in range(0, len(track_ids), batch_size):
+        batch_ids = track_ids[i:i + batch_size]
+        ids_param = ",".join(batch_ids)
+        url = f"{BASE}audio-features"
+        params = {"ids": ids_param}
+        r = requests.get(url, headers=headers, params=params)
+        r.raise_for_status()
+        data = r.json()
+        features.extend(data.get("audio_features", []))
+        time.sleep(0.1)  # Pequena pausa para evitar rate limiting
+    return features
+
+def get_track_info(track_ids):
+    headers = get_headers()
+    tracks = []
+    # Batch de 50 IDs por requisição
+    batch_size = 50
+    for i in range(0, len(track_ids), batch_size):
+        batch_ids = track_ids[i:i + batch_size]
+        ids_param = ",".join(batch_ids)
+        url = f"{BASE}tracks"
+        params = {"ids": ids_param}
+        r = requests.get(url, headers=headers, params=params)
+        r.raise_for_status()
+        data = r.json()
+        tracks.extend(data.get("tracks", []))
+        time.sleep(0.1)  # Pequena pausa para evitar rate limiting
+    return tracks
+
+
+
+
+
 
 
 
